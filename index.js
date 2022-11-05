@@ -11,10 +11,25 @@ const tracks = [];
 const app = express();
 const port = 3000;
 
-var conn = mysql.createConnection({
+app.use(express.json());
+
+var con = mysql.createConnection({
     host: "localhost",
     user: "user",
-    password: "listener"
+    password: "listener",
+    database: "musicApp"
+});
+
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    con.query("CREATE DATABASE musicApp", function (err, result) {
+      if (err) {
+        console.log("Database already created");
+      } else {
+        console.log("New database created");
+      }
+    });
 });
 
 fs.createReadStream('lab3-data/genres.csv')
@@ -140,11 +155,27 @@ app.get('/api/artist', (req,res) => {
 
 });
 
-
-app.get('/api/artists', (req,res) => {
-    const newArtists = artists.map(selectProps("artist_id","artist_handle","artist_date_created"))
-    res.send(newArtists);
+app.get('/playlists', (req,res) => {
+    var sql = "CREATE TABLE playlists (name VARCHAR(255) PRIMARY KEY, trackCount INTEGER, playTime TIME)";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Table created");
+  });
 });
+
+app.post('/playlists/create', (req,res) => {
+    console.log(`POST request for ${req.url}`);
+    const {name} = req.body;
+    console.log(name);
+    const playlist = createPlaylist(name.toString());
+    res.send(playlist);
+});
+
+
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
@@ -162,3 +193,14 @@ function selectProps(...props){
     }
 }
 
+function createPlaylist(name) {
+    var sql = "INSERT INTO playlists (name, trackCount, playTime) VALUES ?";
+    var values = [[name,0,'00:00:00']];
+  con.query(sql,[values], function (err, result) {
+    if (err) {
+        console.log("Playlist already exists.")
+    } else {
+        console.log("1 record inserted");
+    }
+  });
+}
