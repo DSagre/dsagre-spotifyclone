@@ -3,12 +3,19 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const { resolve } = require('path');
 const { rejects } = require('assert');
+const mysql = require('mysql');
 const genres = [];
 const albums = [];
 const artists = [];
 const tracks = [];
 const app = express();
 const port = 3000;
+
+var conn = mysql.createConnection({
+    host: "localhost",
+    user: "user",
+    password: "listener"
+});
 
 fs.createReadStream('lab3-data/genres.csv')
     .pipe(csv({}))
