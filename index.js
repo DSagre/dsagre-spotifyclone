@@ -17,7 +17,7 @@ var con = mysql.createConnection({
     host: "localhost",
     user: "user",
     password: "listener",
-    database: "musicApp"
+    database: "musicApp",
 });
 
 con.connect(function(err) {
@@ -91,7 +91,11 @@ app.get('/api/tracks/:track_id', (req,res) => {
     trackSearch.then((trackList) => {
         const id = req.params.track_id;
         const trackDet = trackList.find(a => parseInt(a.track_id) === parseInt(id))
-        res.send(trackDet);
+        if(trackDet == null) {
+            res.send("Track does not exist");
+        } else {
+            res.send(trackDet);
+        }
     })
 
 });
@@ -186,6 +190,7 @@ app.get('/playlists/create',(req,res) => {
 //Creates the table to hold the trackIDs added to a playlist.
 app.get('/playlists/create/add', (req,res) => {
     var sql = "CREATE TABLE contents (track_id int NOT NULL PRIMARY KEY,PlaylistName VARCHAR(255) NOT NULL, duration TIME, FOREIGN KEY (PlaylistName)REFERENCES playlists(PlaylistName))";
+    var sql = "CREATE TABLE contents (track_id int NOT NULL,PlaylistName VARCHAR(255) NOT NULL, duration TIME, FOREIGN KEY (PlaylistName)REFERENCES playlists(PlaylistName), CONSTRAINT Pk_single PRIMARY KEY (track_id, PlaylistName))";
   con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("Song Table created");
@@ -210,6 +215,16 @@ app.get('/playlists/tracks/:list_name',(req,res) => {
       });
 });
 
+app.get('/playlists/delete/:list_name',(req,res) => {
+    var playlist = req.params.list_name;
+    const sql = "DELETE FROM contents WHERE PlaylistName = ?";
+    const sql2 = "DELETE FROM playlists WHERE PlaylistName = ?";
+    con.query(sql+";"+sql2, [playlist,playlist], function (err, result) {
+        if (err) throw err;
+        res.send(result);
+      });
+    
+});
 
 
 app.listen(port, () => {
