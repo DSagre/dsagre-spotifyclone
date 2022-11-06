@@ -98,7 +98,6 @@ app.get('/api/tracks/:track_id', (req,res) => {
             res.send(trackDet);
         }
     })
-
 });
 
 //Back-end task 4
@@ -190,7 +189,6 @@ app.get('/playlists/create',(req,res) => {
 
 //Creates the table to hold the trackIDs added to a playlist.
 app.get('/playlists/create/add', (req,res) => {
-    var sql = "CREATE TABLE contents (track_id int NOT NULL PRIMARY KEY,PlaylistName VARCHAR(255) NOT NULL, duration TIME, FOREIGN KEY (PlaylistName)REFERENCES playlists(PlaylistName))";
     var sql = "CREATE TABLE contents (track_id int NOT NULL,PlaylistName VARCHAR(255) NOT NULL, duration TIME, FOREIGN KEY (PlaylistName)REFERENCES playlists(PlaylistName), CONSTRAINT Pk_single PRIMARY KEY (track_id, PlaylistName))";
   con.query(sql, function (err, result) {
     if (err) throw err;
@@ -227,7 +225,13 @@ app.get('/playlists/delete/:list_name',(req,res) => {
     
 });
 
-
+app.get('/playlists/info', async (req,res) =>{
+    var sql = "SELECT * FROM playlists";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        res.send(result);
+      });
+});
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });
@@ -269,7 +273,6 @@ function addSong(track_id, PlaylistName) {
     var val3 = [[TIME]]
   con.query(sql+";"+sql2+";"+sql3,[values,val2,val3,val2], function (err, result) {
     if (err) {
-        console.log("Track or Playlist does not exist.")
         console.log("Track already exists in playlist or Playlist does not exist.")
     } else {
         console.log("1 song inserted");
