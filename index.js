@@ -33,6 +33,7 @@ con.connect(function(err) {
     });
 });
 
+//Using csv parser to parse the csv files into json and store them in arrays.
 fs.createReadStream('lab3-data/genres.csv')
     .pipe(csv({}))
     .on('data', (data) => genres.push(data));
@@ -49,11 +50,12 @@ fs.createReadStream('lab3-data/raw_albums.csv')
     .pipe(csv({}))
     .on('data', (data) => albums.push(data));
 
-app.get('/',(req,res) => {
-    res.send('Hello World');
-});
+//Using static to display the main HTML page.
+app.use('/', express.static('static'));
+
 //Backend task 1
 app.get('/api/genres', (req,res) => {
+    //Using the function selectProps to filter the genre array into the inputted properties.
     const newGenres = genres.map(selectProps("genre_id","parent","title"))
     res.send(newGenres);
 });
@@ -61,6 +63,7 @@ app.get('/api/genres', (req,res) => {
 //Back-end task 2
 app.get('/api/artists/:artist_id', (req,res) => {
     console.log(`GET request for ${req.url}`);
+    //Uses a promise to filter the artist array into the desired values.
     const artistSearch = new Promise((resolve,reject) => {
         const artistList = artists.map(selectProps("artist_id","artist_date_created","artist_name","artist_members","artist_favorites","artist_location","artist_website"))
        if(artistList != null) {
@@ -68,7 +71,7 @@ app.get('/api/artists/:artist_id', (req,res) => {
         resolve(artistList)
        }         
     });
-
+    //After the array is made it is then searched for the first artist id match.
     artistSearch.then((artistList) => {
         const id = req.params.artist_id;
         const artistDet = artistList.find(a => parseInt(a.artist_id) === parseInt(id))
@@ -80,6 +83,7 @@ app.get('/api/artists/:artist_id', (req,res) => {
 //Back-end task 3
 app.get('/api/tracks/:track_id', (req,res) => {
     console.log(`GET request for ${req.url}`);
+    //Uses a promise to filter the tracks array into the desired values.
     const trackSearch = new Promise((resolve,reject) => {
         const trackList = tracks.map(selectProps("track_id","album_id", "album_title", "artist_id", "artist_name", "tags", 
         "track_date_created", "track_date_recorded","track_duration", "track_genres", "track_number", "track_title"))
@@ -88,7 +92,7 @@ app.get('/api/tracks/:track_id', (req,res) => {
         resolve(trackList)
        }         
     });
-
+    //After the array is made it is then searched for the first track id match.
     trackSearch.then((trackList) => {
         const id = req.params.track_id;
         const trackDet = trackList.find(a => parseInt(a.track_id) === parseInt(id))
@@ -103,6 +107,7 @@ app.get('/api/tracks/:track_id', (req,res) => {
 //Back-end task 4
 app.get('/api/tracks', (req,res) => {
     console.log(`GET request for ${req.url}`);
+    //Uses a promise to filter the tracks array into the desired values.
     const trackSearch = new Promise((resolve,reject) => {
         const trackList = tracks.map(selectProps("track_id", "album_title", "track_title"))
        if(trackList != null) {
@@ -110,7 +115,8 @@ app.get('/api/tracks', (req,res) => {
         resolve(trackList)
        }         
     });
-    
+    /*Searches through the array for a trackName match or an albumName match 
+    and sends back the matching track ids the results stop 10 or the max matches.*/
     trackSearch.then((trackList) => {
         let results = [];
         const trackName = req.query.trackTitle;
@@ -137,6 +143,7 @@ app.get('/api/tracks', (req,res) => {
 //Back-end task 5
 app.get('/api/artist', (req,res) => {
     console.log(`GET request for ${req.url}`);
+    //Uses a promise to filter the artists array into the desired values.
     const trackSearch = new Promise((resolve,reject) => {
         const artistList = artists.map(selectProps("artist_id","artist_name"))
        if(artistList != null) {
@@ -144,7 +151,7 @@ app.get('/api/artist', (req,res) => {
         resolve(artistList)
        }         
     });
-    
+    //After the array is made it is then searched for the first artist name match and sends back the artist id.
     trackSearch.then((artistList) => {
         let results = [];
         const artistName = req.query.artistName;
@@ -197,6 +204,7 @@ app.get('/playlists/create/add', (req,res) => {
   });
 });
 
+//Uses the create song function with a req body input.
 app.post('/playlists/create/add', (req,res) => {
     console.log(`POST request for ${req.url}`);
     const {track_id,PlaylistName} = req.body;
