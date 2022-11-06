@@ -18,6 +18,7 @@ var con = mysql.createConnection({
     user: "user",
     password: "listener",
     database: "musicApp",
+    multipleStatements : true
 });
 
 con.connect(function(err) {
@@ -256,15 +257,20 @@ function createPlaylist(name) {
 }
 
 function addSong(track_id, PlaylistName) {
-    var sql = "INSERT INTO contents (track_id, PlaylistName, duration) VALUES ?";
+    var sql =  "INSERT INTO contents (track_id, PlaylistName, duration) VALUES ?";
+    var sql2 = "UPDATE playlists SET trackCount = trackCount+1 WHERE PlaylistName = ?"
+    var sql3 = "UPDATE playlists SET playTime = sec_to_time(time_to_sec(playTime) + time_to_sec(?)) WHERE PlaylistName = ?"
     const duration = tracks.find(a => parseInt(a.track_id) === parseInt(track_id));
     console.log(duration);
     var TIME = duration.track_duration;
     console.log(TIME);
-    var values = [[track_id,PlaylistName, duration.track_duration]];
-  con.query(sql,[values], function (err, result) {
+    var values = [[track_id,PlaylistName, TIME]];
+    var val2 = [[PlaylistName]];
+    var val3 = [[TIME]]
+  con.query(sql+";"+sql2+";"+sql3,[values,val2,val3,val2], function (err, result) {
     if (err) {
         console.log("Track or Playlist does not exist.")
+        console.log("Track already exists in playlist or Playlist does not exist.")
     } else {
         console.log("1 song inserted");
     }
