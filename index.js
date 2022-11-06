@@ -109,7 +109,7 @@ app.get('/api/tracks', (req,res) => {
     console.log(`GET request for ${req.url}`);
     //Uses a promise to filter the tracks array into the desired values.
     const trackSearch = new Promise((resolve,reject) => {
-        const trackList = tracks.map(selectProps("track_id", "album_title", "track_title"))
+        const trackList = tracks.map(selectProps("track_id", "album_title", "track_title", "artist_name"))
        if(trackList != null) {
         
         resolve(trackList)
@@ -121,6 +121,7 @@ app.get('/api/tracks', (req,res) => {
         let results = [];
         const trackName = req.query.trackTitle;
         const albumName = req.query.albumName;
+        const artistName = req.query.artistName;
         console.log(trackName);
         for (let i = 0; i < trackList.length && results.length < 10; i++) {
             
@@ -133,7 +134,11 @@ app.get('/api/tracks', (req,res) => {
                 if((trackList[i]['album_title']).toLowerCase().includes(albumName.toLowerCase())){
                     results.push(trackList[i]['track_id']);
                 }
-            }  
+            }  else if(artistName != null) {
+                if((trackList[i]['artist_name']).toLowerCase().includes(artistName.toLowerCase())){
+                    results.push(trackList[i]['track_id']);
+                }
+            }
         }
        res.send(results);
     })
