@@ -183,7 +183,23 @@ app.get('/playlists/create',(req,res) => {
       });
 });
 
+//Creates the table to hold the trackIDs added to a playlist.
+app.get('/playlists/create/add', (req,res) => {
+    var sql = "CREATE TABLE contents (track_id int NOT NULL PRIMARY KEY,PlaylistName VARCHAR(255) NOT NULL, duration TIME, FOREIGN KEY (PlaylistName)REFERENCES playlists(PlaylistName))";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Song Table created");
+    res.send("created");
+  });
+});
 
+app.post('/playlists/create/add', (req,res) => {
+    console.log(`POST request for ${req.url}`);
+    const {track_id,PlaylistName} = req.body;
+    console.log(track_id,PlaylistName);
+    const song = addSong(parseInt(track_id),PlaylistName.toString());
+    res.send(song);
+});
 
 
 
@@ -214,4 +230,17 @@ function createPlaylist(name) {
         console.log("1 record inserted");
     }
   });
+}
+
+function addSong(track_id, PlaylistName) {
+    var sql = "INSERT INTO contents (track_id, PlaylistName, duration) VALUES ?";
+    const duration = tracks.find(a => parseInt(a.track_id) === parseInt(track_id));
+    console.log(duration);
+    var TIME = duration.track_duration;
+    console.log(TIME);
+    var values = [[track_id,PlaylistName, duration.track_duration]];
+  con.query(sql,[values], function (err, result) {
+    if (err) {
+        console.log("Track or Playlist does not exist.")
+    } else {
 }
