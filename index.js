@@ -155,22 +155,33 @@ app.get('/api/artist', (req,res) => {
 
 });
 
+//Create table to hold the names of the playlists and their details.
 app.get('/playlists', (req,res) => {
-    var sql = "CREATE TABLE playlists (name VARCHAR(255) PRIMARY KEY, trackCount INTEGER, playTime TIME)";
+    var sql = "CREATE TABLE playlists (PlaylistName VARCHAR(255) PRIMARY KEY, trackCount INTEGER, playTime TIME)";
   con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("Table created");
+    res.send("created");
   });
 });
 
+//Send the created name for the playlist to the database.
 app.post('/playlists/create', (req,res) => {
     console.log(`POST request for ${req.url}`);
-    const {name} = req.body;
-    console.log(name);
-    const playlist = createPlaylist(name.toString());
+    const {PlaylistName} = req.body;
+    console.log(PlaylistName);
+    const playlist = createPlaylist(PlaylistName.toString());
     res.send(playlist);
 });
 
+//Displays the playlist names.
+app.get('/playlists/create',(req,res) => {
+    var sql = "SELECT PlaylistName FROM playlists";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        res.send(result);
+      });
+});
 
 
 
@@ -194,7 +205,7 @@ function selectProps(...props){
 }
 
 function createPlaylist(name) {
-    var sql = "INSERT INTO playlists (name, trackCount, playTime) VALUES ?";
+    var sql = "INSERT INTO playlists (PlaylistName, trackCount, playTime) VALUES ?";
     var values = [[name,0,'00:00:00']];
   con.query(sql,[values], function (err, result) {
     if (err) {
