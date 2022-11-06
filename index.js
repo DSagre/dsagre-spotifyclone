@@ -201,6 +201,14 @@ app.post('/playlists/create/add', (req,res) => {
     res.send(song);
 });
 
+app.get('/playlists/tracks/:list_name',(req,res) => {
+    var playlist = req.params.list_name;
+    var sql = "SELECT track_id FROM contents WHERE PlaylistName = ?";
+    con.query(sql, [playlist], function (err, result) {
+        if (err) throw err;
+        res.send(result);
+      });
+});
 
 
 
@@ -243,4 +251,7 @@ function addSong(track_id, PlaylistName) {
     if (err) {
         console.log("Track or Playlist does not exist.")
     } else {
+        console.log("1 song inserted");
+    }
+});
 }
