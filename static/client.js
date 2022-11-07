@@ -19,14 +19,16 @@ document.getElementById("addPlaylist").addEventListener(
       getList();
     },
     false
-  );
+);
 
+//Appends the html element to a parent that is inputted through the variables.  
 function append(parent, ...el) {
     el.forEach(node =>{
         return parent.appendChild(node);
     })
 }
 
+//Search songs by album name.
 function searchAl() {
     const table = document.getElementById('display1');
     if(table.innerHTML != " ") {
@@ -88,6 +90,7 @@ function searchAl() {
     
 }
 
+//Search songs by song name
 function searchTrack() {
     const table = document.getElementById('display1');
     if(table.innerHTML != " ") {
@@ -149,6 +152,7 @@ function searchTrack() {
     
 }
 
+//Search songs by artist
 function searchArt() {
     const table = document.getElementById('display1');
     if(table.innerHTML != " ") {
@@ -210,6 +214,7 @@ function searchArt() {
     
 }
 
+//Gets the playlist names to use in the drop down list.
 function getList() {
     const drop = document.getElementById('playlists');
     if(drop.innerHTML != " ") {
@@ -228,26 +233,47 @@ function getList() {
        });  
     }) 
 }
-
+//Used the POST url to send the name of the playlist to the database.
 function addName() {
-    const drop = document.getElementById('playlists');
-    if(drop.innerHTML != " ") {
-        drop.innerHTML = " ";
-    }
-    var url = "http://localhost:3000/playlists/create"
-    fetch(url)
-    .then(resp => resp.json())
+    const add = new Promise((resolve,reject) => {
+        var input = document.getElementById('insertPlaylist').value;
+        if(input != null) {
+            console.log(input);
+            resolve(input);
+        } else {
+            alert("Please type a playlist name!");
+        }
+        
+    });
+
+    add.then((input) => {
+        var url = "http://localhost:3000/playlists/create"
+        const data = {PlaylistName : input};
+        fetch(url, 
+            {
+            method:"POST",
+            headers: {
+                'Content-Type': 'application/json',
+              }, 
+            body: JSON.stringify(data)
+            })
+    .then(resp => resp.text())
     .then(data => {
        const playlists = data;
-       playlists.forEach(element => {
-        let option = document.createElement('option');
-        option.innerHTML = `${element.PlaylistName}`;
-        option.setAttribute("value",`${element.PlaylistName}`);
-        append(drop, option);
-       });  
-    }) 
+       console.log(playlists);
+       if(playlists == "Playlist already exists") {
+        alert("Playlist already exists!");
+        getList();
+       } else {
+        alert("Playlist name added!");
+        getList();
+       }
+    });
+    });
+    
 }
 
+//Delete a playlist and the tracks inside it.
 function deletePlay() {
     const playlist = new Promise((resolve,reject) => {
         var input = document.getElementById('playlists').value;
@@ -268,31 +294,52 @@ function deletePlay() {
        if(data != null) {
         alert(`Playlist ${input} was deleted.`)
         getList();
+        viewAllPlaylists();
        }  
     }) 
     });
      
 }
 
+//Used the POST url from the REST API to send the track to the specified playlist.
 function addToPlay() {
-    const drop = document.getElementById('playlists');
-    if(drop.innerHTML != " ") {
-        drop.innerHTML = " ";
-    }
-    var url = "http://localhost:3000/playlists/create"
-    fetch(url)
-    .then(resp => resp.json())
+    const add = new Promise((resolve,reject) => {
+        const num = document.getElementById('trackNumber').value;
+        var input = document.getElementById('playlists').value;
+        if((num != null) && (input != null)) {
+            const select = [num, input]
+            resolve(select);
+        } else {
+            alert("Please choose a playlist name or enter a number!");
+        }
+        
+    });
+
+    add.then((select) => {
+        var url = "http://localhost:3000/playlists/create/add"
+        const data = {track_id : select[0], PlaylistName : select[1]};
+        fetch(url, 
+            {
+            method:"POST",
+            headers: {
+                'Content-Type': 'application/json',
+              }, 
+            body: JSON.stringify(data)
+            })
+    .then(resp => resp.text())
     .then(data => {
-       const playlists = data;
-       playlists.forEach(element => {
-        let option = document.createElement('option');
-        option.innerHTML = `${element.PlaylistName}`;
-        option.setAttribute("value",`${element.PlaylistName}`);
-        append(drop, option);
-       });  
-    }) 
+       const songs = data;
+       console.log(songs);
+       if(songs == "Track already exists in playlist or Playlist does not exist.") {
+        alert("Track was not added due to playlist not there or track is already on playlist.");
+       } else {
+        alert("Track has been added to playlist!");
+       }
+    });
+    });
 }
 
+//View the songs in a playlist
 function viewPlaylist() {
     const table = document.getElementById('display1');
     if(table.innerHTML != " ") {
@@ -353,6 +400,7 @@ function viewPlaylist() {
     })
 }
 
+//View the details of each playlist
 function viewAllPlaylists() {
     const table = document.getElementById('display2');
     if(table.innerHTML != " ") {

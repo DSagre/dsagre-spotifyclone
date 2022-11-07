@@ -1,0 +1,102 @@
+h1 {
+    text-align: center;
+    font-family:"Lucida Console", "Courier New", monospace;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: #000000;
+    padding: 10px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.topnav input[type=search] {
+    padding: 14px 16px;
+    border: none;
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+#playlistDiv {
+    overflow: hidden;
+    background-color: #000000;
+    padding: 10px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+#playlistDiv input[type = text] {
+    padding: 14px 16px;
+    border: none;
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+#playlists {
+    padding: 14px 16px;
+    border: none;
+    margin-left: 10px;
+    font-size: 15px;
+}
+
+button  {
+    border: none;
+    background-color: #000000;
+    padding: 14px 28px;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    display: inline-block;
+    
+        }
+
+button:hover {background-color: #1bc21b;}
+
+body {
+    margin: 0;
+    background-image: linear-gradient(to right, rgb(27, 194, 27) , rgb(255, 255, 255));
+    background-repeat: repeat;
+    background-position: center;
+    background-size:contain;
+}
+
+#display1 {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+#display1 th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #13a113ea;
+    color: white;
+  }
+
+  #display1 td, #display1 th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #display2 {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+#display2 th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #13a113ea;
+    color: white;
+  }
+
+  #display2 td, #display2 th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }

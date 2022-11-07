@@ -13,6 +13,7 @@ const port = 3000;
 
 app.use(function(req,res,next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
     next();
 })
 
@@ -129,7 +130,7 @@ app.get('/api/tracks', (req,res) => {
         const albumName = req.query.albumName;
         const artistName = req.query.artistName;
         console.log(trackName);
-        for (let i = 0; i < trackList.length && results.length < 20; i++) {
+        for (let i = 0; i < trackList.length && results.length < 15; i++) {
             
             if(trackName != undefined) {
                 
@@ -190,10 +191,18 @@ app.get('/playlists', (req,res) => {
 //Send the created name for the playlist to the database.
 app.post('/playlists/create', (req,res) => {
     console.log(`POST request for ${req.url}`);
+    console.log(req.body);
     const {PlaylistName} = req.body;
-    console.log(PlaylistName);
-    const playlist = createPlaylist(PlaylistName.toString());
-    res.send(playlist);
+        
+    var sql = "INSERT INTO playlists (PlaylistName, trackCount, playTime) VALUES ?";
+    var values = [[PlaylistName,0,'00:00:00']];
+  con.query(sql,[values], function (err, result) {
+    if (err) {
+        res.send("Playlist already exists");
+    } else {
+        res.send("Playlist created");
+    }
+  });
 });
 
 //Displays the playlist names.
@@ -219,11 +228,25 @@ app.get('/playlists/create/add', (req,res) => {
 app.post('/playlists/create/add', (req,res) => {
     console.log(`POST request for ${req.url}`);
     const {track_id,PlaylistName} = req.body;
-    console.log(track_id,PlaylistName);
-    const song = addSong(parseInt(track_id),PlaylistName.toString());
-    res.send(song);
+    var sql =  "INSERT INTO contents (track_id, PlaylistName, duration) VALUES ?";
+    var sql2 = "UPDATE playlists SET trackCount = trackCount+1 WHERE PlaylistName = ?"
+    var sql3 = "UPDATE playlists SET playTime = sec_to_time(time_to_sec(playTime) + time_to_sec(?)) WHERE PlaylistName = ?"
+    const duration = tracks.find(a => parseInt(a.track_id) === parseInt(track_id));
+    var TIME = duration.track_duration;
+    console.log(TIME);
+    var values = [[track_id,PlaylistName, TIME]];
+    var val2 = [[PlaylistName]];
+    var val3 = [[TIME]]
+  con.query(sql+";"+sql2+";"+sql3,[values,val2,val3,val2], function (err, result) {
+    if (err) {
+        res.send("Track already exists in playlist or Playlist does not exist.")
+    } else {
+       res.send("1 song inserted");
+    }
+});
 });
 
+//Gets the track ids for a certain playlist.
 app.get('/playlists/tracks/:list_name',(req,res) => {
     var playlist = req.params.list_name;
     var sql = "SELECT track_id FROM contents WHERE PlaylistName = ?";
@@ -233,6 +256,7 @@ app.get('/playlists/tracks/:list_name',(req,res) => {
       });
 });
 
+//Detetes the playlist along with the tracks in it.
 app.get('/playlists/delete/:list_name',(req,res) => {
     console.log(`DELETE request for ${req.url}`);
     var playlist = req.params.list_name;
@@ -245,13 +269,15 @@ app.get('/playlists/delete/:list_name',(req,res) => {
     
 });
 
-app.get('/playlists/info', async (req,res) =>{
+//Gets the info of the playlists table.
+app.get('/playlists/info', (req,res) =>{
     var sql = "SELECT * FROM playlists";
     con.query(sql, function (err, result) {
         if (err) throw err;
         res.send(result);
       });
 });
+
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });
@@ -266,36 +292,4 @@ function selectProps(...props){
           
     return newObj;
     }
-}
-
-function createPlaylist(name) {
-    var sql = "INSERT INTO playlists (PlaylistName, trackCount, playTime) VALUES ?";
-    var values = [[name,0,'00:00:00']];
-  con.query(sql,[values], function (err, result) {
-    if (err) {
-        console.log("Playlist already exists.")
-    } else {
-        console.log("1 record inserted");
-    }
-  });
-}
-
-function addSong(track_id, PlaylistName) {
-    var sql =  "INSERT INTO contents (track_id, PlaylistName, duration) VALUES ?";
-    var sql2 = "UPDATE playlists SET trackCount = trackCount+1 WHERE PlaylistName = ?"
-    var sql3 = "UPDATE playlists SET playTime = sec_to_time(time_to_sec(playTime) + time_to_sec(?)) WHERE PlaylistName = ?"
-    const duration = tracks.find(a => parseInt(a.track_id) === parseInt(track_id));
-    console.log(duration);
-    var TIME = duration.track_duration;
-    console.log(TIME);
-    var values = [[track_id,PlaylistName, TIME]];
-    var val2 = [[PlaylistName]];
-    var val3 = [[TIME]]
-  con.query(sql+";"+sql2+";"+sql3,[values,val2,val3,val2], function (err, result) {
-    if (err) {
-        console.log("Track already exists in playlist or Playlist does not exist.")
-    } else {
-        console.log("1 song inserted");
-    }
-});
 }
