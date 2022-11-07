@@ -12,13 +12,14 @@
 <h1>Dhruv's Music App</h1>
 <div class="topnav">
     <input type="search" placeholder="Search Song Name..." id="searchSong">
-    <button onclick="" id="btnSong"> Search </button>
+    <button onclick="searchTrack()" id="btnname"> Search </button>
     <input type="search" placeholder="Search Artist Name..." id="searchArtist">
-    <button onclick="" id="btnArtist"> Search </button>
+    <button onclick="searchArt()" id="btnArtist"> Search </button>
     <input type="search" placeholder="Search Album Name..." id="searchAlbum">
-    <button onclick="" id="btnAlbum"> Search </button>
+    <button onclick="searchAl()" id="btnAlbum"> Search </button>
 </div>
 <div class ="sidenav"></div>
-<div class="songList"></div>
+<div id="songDiv"></div>
+<script src="client.js"></script>
 </body>
 </html>
