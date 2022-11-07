@@ -129,7 +129,7 @@ app.get('/api/tracks', (req,res) => {
         const albumName = req.query.albumName;
         const artistName = req.query.artistName;
         console.log(trackName);
-        for (let i = 0; i < trackList.length && results.length < 10; i++) {
+        for (let i = 0; i < trackList.length && results.length < 20; i++) {
             
             if(trackName != undefined) {
                 
@@ -234,6 +234,7 @@ app.get('/playlists/tracks/:list_name',(req,res) => {
 });
 
 app.get('/playlists/delete/:list_name',(req,res) => {
+    console.log(`DELETE request for ${req.url}`);
     var playlist = req.params.list_name;
     const sql = "DELETE FROM contents WHERE PlaylistName = ?";
     const sql2 = "DELETE FROM playlists WHERE PlaylistName = ?";
