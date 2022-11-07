@@ -17,9 +17,20 @@
     <button onclick="searchArt()" id="btnArtist"> Search </button>
     <input type="search" placeholder="Search Album Name..." id="searchAlbum">
     <button onclick="searchAl()" id="btnAlbum"> Search </button>
+    <button id="addPlaylist"> Add Playlist + </button>
 </div>
-<div class ="sidenav"></div>
+<div id ="playlistDiv" hidden>
+    <input type="text" placeholder="Playlist Name..." id="insertPlaylist">
+    <button onclick="addName()" id="addPlay"> Create Playlist</button>
+    <select name = "playlists" id="playlists"></select>
+    <button onclick="deletePlay()" id="delete"> Delete list </button>
+    <button onclick="viewAllPlaylists()" id="viewAll"> View All Lists </button>
+    <input type="text" placeholder="Track No..." id="trackNumber">
+    <button onclick="addToPlay()" id="addTrack"> Add Track </button>
+    <button onclick="viewPlaylist()" id="viewList"> View Playlist </button>
+</div>
 <div id="songDiv"></div>
+<div id="detailsDiv"></div>
 <script src="client.js"></script>
 </body>
 </html>
