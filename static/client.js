@@ -58,13 +58,13 @@ function searchAl() {
         append(table,cat);
         
     album.then((input) => {
-        var url = `http://localhost:3000/api/tracks?albumName=${input}`
+        var url = `http://`+window.location.host+`/api/tracks?albumName=${input}`
         fetch(url)
     .then(resp => resp.json())
     .then(data => {
        const tracks = data;
        tracks.forEach(element => {
-       fetch(`http://localhost:3000/api/tracks/${element}`)
+       fetch(`http://`+window.location.host+`/api/tracks/${element}`)
        .then(resp => resp.json())
        .then(data2 => {
         const trackDet = data2;
@@ -120,13 +120,13 @@ function searchTrack() {
         append(table,cat);
         
     song.then((input) => {
-        var url = `http://localhost:3000/api/tracks?trackTitle=${input}`
+        var url = `http://`+window.location.host+`/api/tracks?trackTitle=${input}`
         fetch(url)
     .then(resp => resp.json())
     .then(data => {
        const tracks = data;
        tracks.forEach(element => {
-       fetch(`http://localhost:3000/api/tracks/${element}`)
+       fetch(`http://`+window.location.host+`/api/tracks/${element}`)
        .then(resp => resp.json())
        .then(data2 => {
         const trackDet = data2;
@@ -182,13 +182,13 @@ function searchArt() {
         append(table,cat);
         
     artist.then((input) => {
-        var url = `http://localhost:3000/api/tracks?artistName=${input}`
+        var url = `http://`+window.location.host+`/api/tracks?artistName=${input}`
         fetch(url)
     .then(resp => resp.json())
     .then(data => {
        const tracks = data;
        tracks.forEach(element => {
-       fetch(`http://localhost:3000/api/tracks/${element}`)
+       fetch(`http://`+window.location.host+`/api/tracks/${element}`)
        .then(resp => resp.json())
        .then(data2 => {
         const trackDet = data2;
@@ -220,7 +220,7 @@ function getList() {
     if(drop.innerHTML != " ") {
         drop.innerHTML = " ";
     }
-    var url = "http://localhost:3000/playlists/create"
+    var url = "http://`+window.location.host+`/playlists/create"
     fetch(url)
     .then(resp => resp.json())
     .then(data => {
@@ -247,7 +247,7 @@ function addName() {
     });
 
     add.then((input) => {
-        var url = "http://localhost:3000/playlists/create"
+        var url = "http://`+window.location.host+`/playlists/create"
         const data = {PlaylistName : input};
         fetch(url, 
             {
@@ -287,7 +287,7 @@ function deletePlay() {
     });
 
     playlist.then((input) => {
-        var url = `http://localhost:3000/playlists/delete/${input}`
+        var url = `http://`+window.location.host+`/playlists/delete/${input}`
         fetch(url)
     .then(resp => resp.json())
     .then(data => {
@@ -316,7 +316,7 @@ function addToPlay() {
     });
 
     add.then((select) => {
-        var url = "http://localhost:3000/playlists/create/add"
+        var url = "http://`+window.location.host+`/playlists/create/add"
         const data = {track_id : select[0], PlaylistName : select[1]};
         fetch(url, 
             {
@@ -369,13 +369,13 @@ function viewPlaylist() {
         append(table,cat);
         
     playlist.then((input) => {
-        var url = `http://localhost:3000/playlists/tracks/${input}`
+        var url = `http://`+window.location.host+`/playlists/tracks/${input}`
         fetch(url)
     .then(resp => resp.json())
     .then(data => {
        const tracks = data;
        tracks.forEach(element => {
-       fetch(`http://localhost:3000/api/tracks/${element.track_id}`)
+       fetch(`http://`+window.location.host+`/api/tracks/${element.track_id}`)
        .then(resp => resp.json())
        .then(data2 => {
         const trackDet = data2;
@@ -419,7 +419,7 @@ function viewAllPlaylists() {
         append(cat, th1,th2,th3);
         append(table,cat);
 
-        var url = "http://localhost:3000/playlists/info"
+        var url = "http://`+window.location.host+`/playlists/info"
         fetch(url)
     .then(resp => resp.json())
     .then(data => {
